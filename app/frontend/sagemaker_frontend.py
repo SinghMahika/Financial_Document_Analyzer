@@ -45,19 +45,12 @@ if uploaded_file is not None:
                 # Read PDF as bytes
                 pdf_bytes = uploaded_file.read()
 
-                # Convert payload to JSON if needed by your model
-                payload = {
-                    "mode": goal_to_mode[goal],
-                    "file_bytes": pdf_bytes.decode("latin-1")  # Use base64 if your model expects that
-                }
-
-
                 runtime = boto3.client("sagemaker-runtime", region_name="us-east-1")
 
                 response = runtime.invoke_endpoint(
                     EndpointName="llm-backend-endpoint",
                     ContentType="application/json",  # or "application/octet-stream" depending on your model
-                    Body=json.dumps(payload)  # or just pdf_bytes if the model accepts raw PDF
+                    Body=pdf_bytes  # or just pdf_bytes if the model accepts raw PDF
                 )
 
                 result_raw = response['Body'].read()
